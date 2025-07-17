@@ -1,0 +1,12 @@
+qualifyze:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../dagster-pipeline/local_duckdb/warehouse.duckdb
+      threads: 4
+      # DuckDB S3 configuration
+      settings:
+        s3_region: "{{ env_var('S3_REGION') }}"
+        s3_access_key_id: "{{ env_var('S3_ACCESS_KEY_ID') }}"
+        s3_secret_access_key: "{{ env_var('S3_SECRET_ACCESS_KEY') }}"

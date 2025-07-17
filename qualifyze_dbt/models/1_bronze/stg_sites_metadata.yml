@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_sites_metadata
+    description: "Bronze model - basic data loading and minimal transformations from raw S3 parquet files"
+    columns:
+      - name: site_id
+        description: "Unique identifier for the site"
+        tests:
+          - not_null
+      - name: site_name
+        description: "Name of the site"
+        tests:
+          - not_null
+      - name: site_address
+        description: "Physical address of the site"
+      - name: country_code
+        description: "Country code for the site location"
+        tests:
+          - not_null
+      - name: revenue
+        description: "Revenue information for the site (null for sites_data, populated for sites_metadata)"
+      - name: employees_count
+        description: "Number of employees at the site (null for sites_data, populated for sites_metadata)"
+      - name: extracted_at
+        description: "Timestamp when the data was extracted (null for sites_data, populated for sites_metadata)"
+      - name: origin_uri
+        description: "Source URI of the data (null for sites_data, populated for sites_metadata)"
+      - name: source_table
+        description: "Source table identifier: 'sites_data' or 'sites_metadata'"
+        tests:
+          - not_null

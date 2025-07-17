@@ -1,0 +1,20 @@
+name: "qualifyze_dbt"
+version: "1.0"
+config-version: 2
+
+profile: "qualifyze"
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+models:
+  qualifyze_dbt:
+    1_bronze:
+      +materialized: view
+    2_silver:
+      +materialized: table
+    3_gold:
+      +materialized: table
