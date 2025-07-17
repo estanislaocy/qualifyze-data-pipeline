@@ -17,7 +17,7 @@ Incoming site records arrive from multiple systems, each with its own naming and
 
 ```mermaid
 flowchart TD
-    A[Historical Records] --> B[S3 Raw Data]
+    A[S3 Historical Records] --> B[RS / Icerberg Raw Data]
     B --> C[Python Similarity Script]
     C --> D{Flagged?}
     
