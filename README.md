@@ -102,7 +102,6 @@ duckdb --ui
    - Gold: Analytics-ready insights
 
 3. **Quality Assurance** (dbt Tests)
-   - Automated data quality checks
    - Model validation
    - Documentation generation
 
@@ -189,11 +188,6 @@ cd qualifyze_dbt
 dbt docs generate
 dbt docs serve
 ```
-
-### Logging
-- **Dagster Logs**: Pipeline execution and error tracking
-- **dbt Logs**: Model execution and performance
-- **S3 Access Logs**: Data transfer monitoring
 
 ## Production
 

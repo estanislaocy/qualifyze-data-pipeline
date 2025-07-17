@@ -42,28 +42,29 @@ flowchart TD
 ```
 
 ## 3. Impact
-• > 10× faster end-to-end processing vs. SQL cross-join  
-• System gets smarter with use possible ML classification model.
+• > 10× Python/Polars vs. SQL cross-join  
+• Possible ML classification model
+• Improved data quality through systematic duplicate detection
 
 ## 4. Curator Decision Options
 
 The `curator_decision` field has **4 main options**:
 
 ### `merge_duplicate`
-**When**: Same company with minor variations (ACME vs Acme, same address)
-**Result**: One record becomes master, other gets merged
+- **When**: Same company with minor variations (ACME vs Acme, same address)
+- **Result**: One record becomes master, other gets merged
 
 ### `parent_child`
-**When**: Same company but different locations (HQ vs branch)
-**Result**: Creates relationship record linking parent and child
+- **When**: Same company but different locations (HQ vs branch)
+- **Result**: Creates relationship record linking parent and child
 
 ### `keep_separate`
-**When**: Different companies with similar names
-**Result**: Both records remain separate, no action
+- **When**: Different companies with similar names
+- **Result**: Both records remain separate, no action
 
 ### `need_more_info`
-**When**: Cannot make decision with current information
-**Result**: Item stays in queue for later review
+- **When**: Cannot make decision with current information
+- **Result**: Item stays in queue for later review
 
 ## 5. Complete Example: ACME London HQ Merge Process
 

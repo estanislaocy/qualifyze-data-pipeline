@@ -135,8 +135,6 @@ S3 Parquet Files → 1_bronze (dbt) → 2_silver (dbt) → 3_gold (dbt)
 **Key Features**:
 - **Complete Organizational Data**: Includes all sites (with and without financial data)
 - **Integer Formatting**: Revenue and employee_count as integers (0 for missing data)
-- **Data Completeness**: Tracks data quality with completeness classification
-- **Logical Ordering**: HQ sites first, then child companies, alphabetically by name
 - **Business Ready**: Optimized for BI tools and executive dashboards
 
 **Output Columns**:
