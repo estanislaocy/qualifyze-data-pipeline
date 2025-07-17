@@ -12,7 +12,7 @@ A modern data pipeline infrastructure built with Dagster and dbt that processes 
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/estanislaocy/qualifyze-data-pipeline
 cd qualifyze-data-pipeline
 
 # Install Dagster pipeline
