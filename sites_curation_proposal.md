@@ -13,39 +13,32 @@ Incoming site records arrive from multiple systems, each with its own naming and
    - **Flagged for curation** → Routes to curator queue table for manual review
    - **Not flagged** → Continues through normal dbt bronze → silver → gold pipeline
 4. **Manual Curation** – Human reviewers process queue items, making merge/link/separate decisions
-5. **Re-entry** – Curated decisions update master data and re-enter the pipeline for future processing
+5. **Re-entry** – Curated data goes back to the S3 raw bucket by python curated ingestion script.
 
 ```mermaid
 flowchart TD
-    A[S3 Raw Data] --> B[Python Similarity Script]
-    B --> C{Flagged?}
+    A[Historical Records] --> B[S3 Raw Data]
+    B --> C[Python Similarity Script]
+    C --> D{Flagged?}
     
-    C -->|Yes| D[Curator Queue DB]
-    C -->|No| E[Direct to dbt]
+    D -->|Yes| E[Curator Queue DB]
+    D -->|No| F[Direct to dbt]
     
-    D --> F[Slack Notification]
-    F --> G[Curator Decision]
-    G --> H[Master Data Tables]
+    E --> G[Slack Notification]
+    G --> H[Curator Decision]
+    H --> I[Python Curated Ingestion]
+    I --> B
     
-    E --> I[Bronze Model]
+    F --> J[Bronze Model]
+    J --> K[Silver Model]
+    K --> L[Gold Model]
     
-    J[dbt Trigger Every 12 Hours] --> K{Check for Completed Items}
-    K -->|Yes| L[Process Master Data Update Bronze Layer]
-    K -->|No| M[Do Nothing]
-    
-    H --> N[Wait for dbt Trigger]
-    N --> J
-    
-    L --> I[Bronze Model]
-    I --> O[Silver Model]
-    O --> P[Gold Model]
-    
-    style G fill:#e8f5e8
-    style I fill:#e3f2fd
-    style O fill:#fff3e0
-    style P fill:#f3e5f5
-    style J fill:#ffebee
-    style F fill:#fff3e0
+    style H fill:#e8f5e8
+    style J fill:#e3f2fd
+    style K fill:#fff3e0
+    style L fill:#f3e5f5
+    style G fill:#fff3e0
+    style I fill:#ffebee
 ```
 
 ## 3. Impact
@@ -76,11 +69,11 @@ The `curator_decision` field has **4 main options**:
 
 ### Scenario: New "ACME London HQ" vs Existing "ACME London Headquarters"
 
-- **Step 1**: Python detects 87% similarity between new and existing master
+- **Step 1**: Python detects 87% similarity between new and existing record
 - **Step 2**: Flagged for curation, Slack notification sent to curator team
 - **Step 3**: Curator decides `merge_duplicate`
-- **Step 4**: dbt trigger (every 12 hours) processes decision
-- **Step 5**: New record gets merged into existing master
+- **Step 4**: Triggers python script or runs every X hours to ingest the curated data back to the s3 bucket
+- **Step 5**: New record gets merged into existing record
 - **Result**: Analytics see one company instead of two
 
 ## 6. Key Benefits
@@ -88,5 +81,4 @@ The `curator_decision` field has **4 main options**:
 - **Scalable**: Python pre-filtering reduces comparisons from trillions to millions
 - **Accurate**: Multiple similarity algorithms + human judgment
 - **Auditable**: Full traceability of all curation decisions
-- **Self-improving**: System learns from curator decisions over time
 - **Non-blocking**: Curation doesn't delay normal data pipeline

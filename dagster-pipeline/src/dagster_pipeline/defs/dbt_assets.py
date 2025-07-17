@@ -47,22 +47,17 @@ def create_dbt_test_asset(test_name: str, deps: list, description: str = ""):
     
     return dbt_test_asset
 
-# Create dbt assets using the helper function
-run_dbt_models = create_dbt_asset(
-    model_name="all",
-    deps=["staged_sites_data", "staged_sites_metadata"],
-    description="Run all dbt models after data ingestion"
-)
+
 
 dbt_stg_sites = create_dbt_asset(
     model_name="stg_sites",
-    deps=["dbt_all"],
+    deps=["staged_sites_data"],
     description="Run dbt bronze model - basic data loading from sites_data"
 )
 
 dbt_stg_sites_metadata = create_dbt_asset(
     model_name="stg_sites_metadata",
-    deps=["dbt_all"],
+    deps=["staged_sites_metadata"],
     description="Run dbt bronze model - basic data loading from sites_metadata"
 )
 
@@ -84,13 +79,7 @@ dbt_site_business_insights = create_dbt_asset(
     description="Run dbt gold model - final business-ready output"
 )
 
-# Create dbt test assets
-dbt_test_all = create_dbt_test_asset(
-    test_name="all",
-    deps=["dbt_site_business_insights"],
-    description="Run all dbt tests after models are built"
-)
-
+# Create dbt test assets - individual tests for immediate feedback
 dbt_test_stg_sites = create_dbt_test_asset(
     test_name="stg_sites",
     deps=["dbt_stg_sites"],
@@ -121,8 +110,10 @@ dbt_test_site_business_insights = create_dbt_test_asset(
     description="Run tests for site_business_insights gold model"
 )
 
+
+
 @asset(
-    deps=["dbt_test_all"],
+    deps=["dbt_test_site_business_insights"],  # Wait for the final model's tests to pass
     required_resource_keys={"dbt"}
 )
 def generate_dbt_docs(context: AssetExecutionContext):
@@ -159,12 +150,25 @@ def export_business_insights_to_gold(context: AssetExecutionContext):
         # Use dbt CLI to export the table using our macro
         context.log.info("Running dbt export command...")
         
+        # Load environment variables from .env file
+        env_vars = os.environ.copy()
+        env_file_path = os.path.join(dbt_project_dir, '.env')
+        
+        if os.path.exists(env_file_path):
+            with open(env_file_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        key, value = line.split('=', 1)
+                        env_vars[key] = value
+        
         result = subprocess.run(
             ["dbt", "run-operation", "export_table_to_parquet", 
              "--args", f"{{'table_name': 'site_business_insights', 'output_path': '{temp_parquet_path}'}}"],
             capture_output=True,
             text=True,
-            cwd=dbt_project_dir
+            cwd=dbt_project_dir,
+            env=env_vars
         )
         
         if result.returncode != 0:
@@ -198,13 +202,11 @@ def export_business_insights_to_gold(context: AssetExecutionContext):
 
 # List of all dbt assets
 dbt_assets = [
-    run_dbt_models,
     dbt_stg_sites,
     dbt_stg_sites_metadata,
     dbt_sites_unions,
     dbt_sites_enriched,
     dbt_site_business_insights,
-    dbt_test_all,
     dbt_test_stg_sites,
     dbt_test_stg_sites_metadata,
     dbt_test_sites_unions,

@@ -182,7 +182,29 @@ S3 Parquet Files → 1_bronze (dbt) → 2_silver (dbt) → 3_gold (dbt)
 
 ## Configuration
 
+### Environment Variables
+This project requires S3 credentials to access the data sources. The credentials are stored in a `.env` file and loaded automatically.
+
+**Required Environment Variables**:
+- `S3_REGION`: AWS S3 region (e.g., eu-north-1)
+- `S3_ACCESS_KEY_ID`: AWS access key ID
+- `S3_SECRET_ACCESS_KEY`: AWS secret access key
+
+**Running dbt with Environment Variables**:
+
+Option 1: Use the provided script (recommended):
+```bash
+./run_dbt.sh debug
+./run_dbt.sh run
+./run_dbt.sh test
+```
+
+Option 2: Load environment variables manually:
+```bash
+export $(cat .env | grep -v '^#' | xargs) && dbt debug
+```
+
 ### Materialization Strategy
-- **1_bronze**: Views (lightweight, always fresh)
+- **1_bronze**: Views (data loading)
 - **2_silver**: Views and Tables (performance for complex transformations)
 - **3_gold**: Tables (final output, optimized for business use)
