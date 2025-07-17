@@ -136,6 +136,13 @@ qualifyze-data-pipeline/
 
 ### Database Configuration
 
+**Run Enviornment Script** (`qualifyze_dbt/load_env_credentials.sh`):
+
+```yaml
+# Load environment variables from .env file
+export $(cat .env | grep -v '^#' | xargs)
+```
+
 **DuckDB Setup** (`qualifyze_dbt/profiles.yml`):
 ```yaml
 # AWS Configuration (Use environment variables for production)
