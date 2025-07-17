@@ -1,6 +1,6 @@
 # Qualifyze Data Pipeline - Infrastructure & Deployment
 
-A modern data pipeline infrastructure built with Dagster and dbt that processes site data from S3 parquet files through a bronze-silver-gold architecture.
+Data pipeline infrastructure built with Dagster and dbt that processes site data from S3 parquet files through a bronze-silver-gold architecture.
 
 ## Quick Start
 
